@@ -18,6 +18,7 @@ ai-engineer/
 ├── named entity recognition.ipynb  # Named Entity Recognition (NER)
 ├── pos-ner-practical.ipynb          # Combined POS + NER on BBC News dataset
 ├── rule-based-sentitment.ipynb      # Rule-based sentiment analysis
+├── bag-of-words.ipynb               # Bag of Words text vectorisation
 ├── sentiment-practical.ipynb        # Sentiment analysis on real book reviews
 ├── bbc_news.csv                     # BBC News headlines dataset (1,000 articles)
 ├── tripadvisor_hotel_reviews.csv    # TripAdvisor hotel reviews dataset (109 reviews)
@@ -127,6 +128,18 @@ Compares three approaches — rule-based lexicons through to pre-trained transfo
 
 ---
 
+### Bag of Words (`bag-of-words.ipynb`)
+Introduces text vectorisation — converting raw sentences into numerical feature matrices that machine learning models can consume.
+
+Using scikit-learn's `CountVectorizer` on 6 sample sentences:
+- Builds a vocabulary of all unique tokens across the corpus (71 words)
+- Produces a document-term matrix where each row is a sentence and each column is a word, with cell values representing word counts
+- Demonstrates that sentences sharing no words produce entirely separate columns, and sentences with common words (e.g. `"the"`) share those columns
+
+This is a foundational step before any supervised ML on text — the output matrix feeds directly into classifiers like Naive Bayes or Logistic Regression.
+
+---
+
 ### Sentiment Analysis Practical (`sentiment-practical.ipynb`)
 Applies VADER and DistilBERT to the **Amazon book reviews** dataset (100 reviews, rated 1–5) to compare rule-based vs transformer sentiment at scale.
 
@@ -176,13 +189,14 @@ Applied to the **BBC News headlines** dataset (1,000 articles):
 | `textblob` | Rule-based sentiment analysis (polarity scoring) |
 | `vaderSentiment` | Rule-based sentiment analysis with negation handling |
 | `transformers` | Hugging Face pipeline for pre-trained transformer sentiment models |
+| `scikit-learn` | Text vectorisation (`CountVectorizer`) and ML utilities |
 
 ---
 
 ## Setup
 
 ```bash
-pip install nltk spacy pandas matplotlib textblob vaderSentiment transformers torch
+pip install nltk spacy pandas matplotlib textblob vaderSentiment transformers torch scikit-learn
 python -m spacy download en_core_web_sm
 ```
 
