@@ -19,6 +19,7 @@ ai-engineer/
 ├── pos-ner-practical.ipynb          # Combined POS + NER on BBC News dataset
 ├── rule-based-sentitment.ipynb      # Rule-based sentiment analysis
 ├── bag-of-words.ipynb               # Bag of Words text vectorisation
+├── tf-idf.ipynb                     # TF-IDF text vectorisation
 ├── sentiment-practical.ipynb        # Sentiment analysis on real book reviews
 ├── bbc_news.csv                     # BBC News headlines dataset (1,000 articles)
 ├── tripadvisor_hotel_reviews.csv    # TripAdvisor hotel reviews dataset (109 reviews)
@@ -137,6 +138,21 @@ Using scikit-learn's `CountVectorizer` on 6 sample sentences:
 - Demonstrates that sentences sharing no words produce entirely separate columns, and sentences with common words (e.g. `"the"`) share those columns
 
 This is a foundational step before any supervised ML on text — the output matrix feeds directly into classifiers like Naive Bayes or Logistic Regression.
+
+---
+
+### TF-IDF (`tf-idf.ipynb`)
+Extends Bag of Words by weighting words based on how distinctive they are to a document, using scikit-learn's `TfidfVectorizer` on the same 6 sentences.
+
+**TF-IDF = Term Frequency × Inverse Document Frequency**
+- Words that appear in many documents (e.g. `"the"`) get low scores — they're not informative
+- Words that appear frequently in one document but rarely elsewhere get high scores — they're distinctive
+
+Using the same corpus as `bag-of-words.ipynb`, the output matrix has the same shape (6 × 71) but float weights instead of raw counts. For example:
+- `"admirable"` scores `0.294` in sentence 2 (unique to that doc)
+- `"are"` scores only `0.215` in sentence 1 and `0.222` in sentence 4 (appears in two docs, so penalised)
+
+**Key takeaway:** TF-IDF produces better features than raw counts for tasks like search and classification because common words are down-weighted automatically — no manual stop word removal needed.
 
 ---
 
