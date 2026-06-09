@@ -11,6 +11,7 @@ ai-engineer/
 ├── python/
 │   └── python-variables.ipynb              # Python fundamentals
 ├── nlp/
+│   ├── tokenisation-and-stemming.ipynb     # Tokenisation, stemming, n-gram frequency
 │   ├── lower.ipynb                         # Text lowercasing
 │   ├── regex.ipynb                         # Regular expressions
 │   ├── stop words.ipynb                    # Stop word removal
@@ -40,6 +41,16 @@ ai-engineer/
 - Loops (`for`, `range`, conditional logic)
 - Working with lists and dictionaries
 - Importing standard library modules (`math`)
+
+### Tokenisation & Stemming (`nlp/tokenisation-and-stemming.ipynb`)
+Introduces the first steps of any NLP pipeline — splitting text into units and reducing words to their root form.
+
+- **Sentence tokenisation** — `sent_tokenize` splits a paragraph into individual sentences
+- **Word tokenisation** — `word_tokenize` splits sentences into individual word tokens
+- **Stemming** — `PorterStemmer` reduces word variants to a common stem (e.g. `connecting`, `connected`, `connectivity` → all become `connect`)
+- **N-gram frequency** — bigrams extracted from a sample sentence using `nltk.ngrams`, counted with `Counter`, loaded into a DataFrame and visualised as a bar chart
+
+---
 
 ### Text Preprocessing
 
