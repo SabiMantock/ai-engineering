@@ -20,10 +20,12 @@ ai-engineer/
 ├── rule-based-sentitment.ipynb      # Rule-based sentiment analysis
 ├── bag-of-words.ipynb               # Bag of Words text vectorisation
 ├── tf-idf.ipynb                     # TF-IDF text vectorisation
+├── lda.ipynb                        # Topic modelling with LDA and LSA
 ├── sentiment-practical.ipynb        # Sentiment analysis on real book reviews
 ├── bbc_news.csv                     # BBC News headlines dataset (1,000 articles)
 ├── tripadvisor_hotel_reviews.csv    # TripAdvisor hotel reviews dataset (109 reviews)
-└── book_reviews_sample.csv          # Amazon book reviews dataset (100 reviews)
+├── book_reviews_sample.csv          # Amazon book reviews dataset (100 reviews)
+└── news_articles.csv                # News articles dataset (100 articles)
 ```
 
 ---
@@ -141,6 +143,33 @@ This is a foundational step before any supervised ML on text — the output matr
 
 ---
 
+### Topic Modelling (`lda.ipynb`)
+Unsupervised discovery of latent themes across a corpus using **LDA** and **LSA**, applied to the **news articles** dataset (100 articles).
+
+**Preprocessing pipeline:**
+- Lowercase + punctuation removal → stop word removal → tokenisation → **stemming** (PorterStemmer used here for speed over lemmatisation given corpus size)
+- Gensim `Dictionary` built from all tokens (8,693 unique stems)
+- Corpus converted to bag-of-words format using `doc2bow`
+
+**LDA** (Latent Dirichlet Allocation) with 2 topics:
+- Both topics surface similar top words (`mr`, `said`, `trump`, `state`) — suggests the corpus may not have strongly separated themes at `k=2`
+
+**LSA** (Latent Semantic Analysis) with 2 topics:
+- Topic 0: `mr`, `said`, `trump`, `state` — general political/news
+- Topic 1: negative loading on `mr`/`trump`, positive on `saudi`, `weight` — contrasting sub-theme
+
+**Coherence-based topic selection:**
+- LSA models trained for `k = 2–11`
+- `CoherenceModel` (c_v) score computed for each
+- Plotted to find the elbow — **k=3** selected as optimal
+
+**Final LSA model (3 topics):**
+- Topic 0: `mr`, `said`, `trump`, `state`, `would` — US politics
+- Topic 1: `saudi`, `taliban`, `afghanistan` — international/conflict
+- Topic 2: `weight`, `dr` — health/medicine
+
+---
+
 ### TF-IDF (`tf-idf.ipynb`)
 Extends Bag of Words by weighting words based on how distinctive they are to a document, using scikit-learn's `TfidfVectorizer` on the same 6 sentences.
 
@@ -206,13 +235,14 @@ Applied to the **BBC News headlines** dataset (1,000 articles):
 | `vaderSentiment` | Rule-based sentiment analysis with negation handling |
 | `transformers` | Hugging Face pipeline for pre-trained transformer sentiment models |
 | `scikit-learn` | Text vectorisation (`CountVectorizer`) and ML utilities |
+| `gensim` | Topic modelling (LDA, LSA), dictionary and corpus utilities |
 
 ---
 
 ## Setup
 
 ```bash
-pip install nltk spacy pandas matplotlib textblob vaderSentiment transformers torch scikit-learn
+pip install nltk spacy pandas matplotlib textblob vaderSentiment transformers torch scikit-learn gensim
 python -m spacy download en_core_web_sm
 ```
 
@@ -236,3 +266,6 @@ nltk.download('punkt_tab')
 
 **`book_reviews_sample.csv`** — 100 Amazon book reviews with:
 - `index`, `reviewText`, `rating` (1–5)
+
+**`news_articles.csv`** — 100 news articles with:
+- `id`, `title`, `content`
