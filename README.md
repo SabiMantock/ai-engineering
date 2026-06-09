@@ -9,23 +9,26 @@ A collection of Jupyter notebooks covering foundational NLP concepts and Python 
 ```
 ai-engineer/
 ├── python/
-│   └── python-variables.ipynb       # Python fundamentals
-├── lower.ipynb                      # Text lowercasing
-├── regex.ipynb                      # Regular expressions
-├── stop words.ipynb                 # Stop word removal
-├── textproeprocessing.ipynb         # Full NLP preprocessing pipeline
-├── speech-tagging.ipynb             # Part-of-speech (POS) tagging
-├── named entity recognition.ipynb  # Named Entity Recognition (NER)
-├── pos-ner-practical.ipynb          # Combined POS + NER on BBC News dataset
-├── rule-based-sentitment.ipynb      # Rule-based sentiment analysis
-├── bag-of-words.ipynb               # Bag of Words text vectorisation
-├── tf-idf.ipynb                     # TF-IDF text vectorisation
-├── lda.ipynb                        # Topic modelling with LDA and LSA
-├── sentiment-practical.ipynb        # Sentiment analysis on real book reviews
-├── bbc_news.csv                     # BBC News headlines dataset (1,000 articles)
-├── tripadvisor_hotel_reviews.csv    # TripAdvisor hotel reviews dataset (109 reviews)
-├── book_reviews_sample.csv          # Amazon book reviews dataset (100 reviews)
-└── news_articles.csv                # News articles dataset (100 articles)
+│   └── python-variables.ipynb              # Python fundamentals
+├── nlp/
+│   ├── lower.ipynb                         # Text lowercasing
+│   ├── regex.ipynb                         # Regular expressions
+│   ├── stop words.ipynb                    # Stop word removal
+│   ├── textproeprocessing.ipynb            # Full NLP preprocessing pipeline
+│   ├── speech-tagging.ipynb                # Part-of-speech (POS) tagging
+│   ├── named entity recognition.ipynb      # Named Entity Recognition (NER)
+│   ├── pos-ner-practical.ipynb             # Combined POS + NER on BBC News dataset
+│   ├── rule-based-sentitment.ipynb         # Rule-based sentiment analysis
+│   ├── sentiment-practical.ipynb           # Sentiment analysis on real book reviews
+│   ├── bag-of-words.ipynb                  # Bag of Words text vectorisation
+│   ├── tf-idf.ipynb                        # TF-IDF text vectorisation
+│   ├── lda.ipynb                           # Topic modelling with LDA and LSA
+│   ├── bbc_news.csv                        # BBC News headlines (1,000 articles)
+│   ├── tripadvisor_hotel_reviews.csv       # TripAdvisor hotel reviews (109 reviews)
+│   ├── book_reviews_sample.csv             # Amazon book reviews (100 reviews)
+│   └── news_articles.csv                   # News articles (100 articles)
+└── custom-text-classifier/
+    └── custom-text-classifier.ipynb        # Text classification with BoW + ML models
 ```
 
 ---
@@ -219,6 +222,23 @@ Applied to the **BBC News headlines** dataset (1,000 articles):
 **NER across all headlines:**
 - Top entities: `2022` (CARDINAL), `russian` (NORP), `england` / `uk` (GPE)
 - Shows NER applied to real-world news text at scale
+
+---
+
+### Custom Text Classifier (`custom-text-classifier/custom-text-classifier.ipynb`)
+Puts the NLP building blocks together into a supervised text classification pipeline, trained on 20 hand-labelled sentiment sentences (10 positive, 10 negative).
+
+**Pipeline:**
+1. Vectorise text using `CountVectorizer` → Bag of Words matrix (20 × 118)
+2. Shuffle and split: 70% train / 30% test
+3. Train and evaluate two classifiers side by side:
+
+| Model | Accuracy |
+|---|---|
+| Logistic Regression | 33% |
+| Multinomial Naive Bayes | 50% |
+
+**Key takeaway:** With only 20 training samples, both models underfit — Naive Bayes outperforms Logistic Regression on this tiny dataset because it makes stronger independence assumptions that work better with sparse, small-data BoW features. This motivates using larger datasets and more expressive representations (TF-IDF, embeddings) for real classifiers.
 
 ---
 
