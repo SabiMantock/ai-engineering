@@ -24,10 +24,12 @@ ai-engineer/
 │   ├── bag-of-words.ipynb                  # Bag of Words text vectorisation
 │   ├── tf-idf.ipynb                        # TF-IDF text vectorisation
 │   ├── lda.ipynb                           # Topic modelling with LDA and LSA
+│   ├── categorizing-fake-news.ipynb        # Fake vs factual news classification
 │   ├── bbc_news.csv                        # BBC News headlines (1,000 articles)
 │   ├── tripadvisor_hotel_reviews.csv       # TripAdvisor hotel reviews (109 reviews)
 │   ├── book_reviews_sample.csv             # Amazon book reviews (100 reviews)
-│   └── news_articles.csv                   # News articles (100 articles)
+│   ├── news_articles.csv                   # News articles (100 articles)
+│   └── fake_news_data.csv                  # Fake/factual news articles (198 articles)
 └── custom-text-classifier/
     └── custom-text-classifier.ipynb        # Text classification with BoW + ML models
 ```
@@ -253,6 +255,47 @@ Puts the NLP building blocks together into a supervised text classification pipe
 
 ---
 
+### Categorizing Fake News (`nlp/categorizing-fake-news.ipynb`)
+A capstone NLP pipeline that brings together POS tagging, NER, sentiment analysis, topic modelling, and text classification on the **fake news dataset** (198 articles, labelled Fake News / Factual News).
+
+**Dataset:** 4 columns — `title`, `text`, `date`, `fake_or_factual` (99 fake, 99 factual)
+
+**POS & NER comparison (fake vs factual):**
+- spaCy used to extract POS tags and named entities from each class separately
+- Top nouns in fake news: `people`, `president`, `women`, `campaign`, `election`
+- Top nouns in factual news: `government`, `bill`, `administration`, `tax`, `court`
+- NER visualised with colour-coded bar charts per class (`ORG`, `GPE`, `NORP`, `PERSON`, `DATE`)
+
+**Preprocessing pipeline:**
+- Strip dateline prefixes (`"WASHINGTON (Reuters) —"`) via regex
+- Lowercase → punctuation removal → stop word removal → tokenisation → lemmatisation
+
+**Top unigrams after preprocessing:** `said`, `trump`, `state`, `president`, `would`, `clinton`
+**Top bigrams:** `(donald, trump)`, `(united, state)`, `(white, house)`, `(hillary, clinton)`
+
+**Sentiment analysis (VADER):**
+- `compound` score computed per article
+- Binned into negative / neutral / positive
+- Breakdown by article class: fake news skews more negative on average
+
+**Topic modelling (LDA + LSA on fake news corpus):**
+- Coherence-based selection used for both LDA (`k=7`) and LSA (`k=7`)
+- LDA topics surface US politics themes dominated by `trump`, `clinton`, `president`
+- LSA topics reveal sub-themes: US elections, Michael Flynn / Russia, school/campus stories
+
+**Classification (Bag of Words + ML):**
+- `CountVectorizer` used to vectorise preprocessed text
+- 70/30 train/test split
+
+| Model | Accuracy |
+|---|---|
+| Logistic Regression | 88% |
+| SVM (SGD) | 87% |
+
+**Key takeaway:** With 198 labelled articles and a full preprocessing pipeline, both models achieve ~88% accuracy — a dramatic improvement over the toy 20-sample classifier. The fake/factual distinction is learnable from word-level features alone, though real-world deployment would need a larger, more balanced corpus.
+
+---
+
 ## Libraries Used
 
 | Library | Purpose |
@@ -267,6 +310,7 @@ Puts the NLP building blocks together into a supervised text classification pipe
 | `transformers` | Hugging Face pipeline for pre-trained transformer sentiment models |
 | `scikit-learn` | Text vectorisation (`CountVectorizer`) and ML utilities |
 | `gensim` | Topic modelling (LDA, LSA), dictionary and corpus utilities |
+| `seaborn` | Statistical visualisation (NER bar charts, sentiment breakdowns) |
 
 ---
 
@@ -300,3 +344,6 @@ nltk.download('punkt_tab')
 
 **`news_articles.csv`** — 100 news articles with:
 - `id`, `title`, `content`
+
+**`fake_news_data.csv`** — 198 news articles with:
+- `title`, `text`, `date`, `fake_or_factual` (Fake News / Factual News)
