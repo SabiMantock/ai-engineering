@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sabi — AI Engineer Progress</title>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --border:#30363d; --text:#e6edf3; --muted:#8b949e;
+    --accent:#58a6ff; --green:#3fb950; --orange:#f0883e; --gold:#e3b341; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',Roboto,sans-serif;padding:24px;max-width:960px;margin:0 auto}
+  h1{font-size:1.5rem;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .card h2{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+  .big{font-size:2.2rem;font-weight:700}
+  .unit{font-size:.9rem;color:var(--muted);font-weight:400}
+  .flame{font-size:2.2rem}
+  /* XP bar */
+  .xpbar{background:var(--bg);border:1px solid var(--border);border-radius:99px;height:14px;overflow:hidden;margin-top:10px}
+  .xpfill{background:linear-gradient(90deg,var(--accent),var(--purple));height:100%;border-radius:99px;transition:width .6s}
+  /* phases */
+  .phase{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+  .phase:last-child{border-bottom:none}
+  .pid{font-family:ui-monospace,monospace;font-size:.75rem;width:34px;color:var(--muted);flex-shrink:0}
+  .pname{flex:1;font-size:.88rem}
+  .pbar{width:130px;height:8px;background:var(--bg);border-radius:99px;overflow:hidden;flex-shrink:0}
+  .pfill{height:100%;border-radius:99px}
+  .tag{font-size:.68rem;padding:2px 8px;border-radius:99px;flex-shrink:0;width:74px;text-align:center}
+  .t-current{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent)}
+  .t-done{background:rgba(63,185,80,.15);color:var(--green);border:1px solid var(--green)}
+  .t-locked{background:transparent;color:var(--muted);border:1px solid var(--border)}
+  .star{color:var(--gold)}
+  /* heatmap */
+  .heat{display:grid;grid-template-columns:repeat(14,1fr);gap:5px;margin-top:4px}
+  .cell{aspect-ratio:1;border-radius:4px;background:#1c2129;border:1px solid var(--border);position:relative}
+  .cell[data-lvl="1"]{background:#0e4429;border-color:#0e4429}
+  .cell[data-lvl="2"]{background:#26a641;border-color:#26a641}
+  .cell[data-lvl="3"]{background:#39d353;border-color:#39d353}
+  .cell:hover::after{content:attr(data-tip);position:absolute;bottom:130%;left:50%;transform:translateX(-50%);background:#000;padding:4px 8px;border-radius:6px;font-size:.7rem;white-space:nowrap;z-index:2}
+  /* badges */
+  .badges{display:flex;flex-wrap:wrap;gap:10px}
+  .badge{border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:.8rem;display:flex;align-items:center;gap:8px}
+  .badge.locked{opacity:.35;filter:grayscale(1)}
+  .next{border-left:3px solid var(--accent)}
+  .next p{font-size:.9rem;line-height:1.5}
+  .wide{grid-column:1/-1}
+  .log{font-size:.82rem;color:var(--muted)}
+  .log li{list-style:none;padding:5px 0;border-bottom:1px solid var(--border)}
+  .log li:last-child{border:none}
+  .log .d{color:var(--accent);font-family:ui-monospace,monospace;margin-right:8px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.heat{grid-template-columns:repeat(7,1fr)}}
+</style>
+</head>
+<body>
+
+<h1>⚔️ Sabi — The Path to Immortality (AI Engineer)</h1>
+<p class="sub">A mortal walks the path: gather qi daily · survive tribulations · break through realms. North star: small task-specific language models, shipped as software, improving in a loop.</p>
+
+<div class="grid">
+  <div class="card"><h2>Streak</h2><div class="big"><span class="flame" id="flameIcon">🔥</span> <span id="streak">0</span><span class="unit"> days</span></div><div class="sub" id="longest" style="margin:6px 0 0">longest: 0</div></div>
+  <div class="card"><h2>Realm</h2><div class="big" id="realm" style="font-size:1.15rem;line-height:1.3;color:var(--purple)">Mortal</div><div class="xpbar"><div class="xpfill" id="xpfill" style="width:0%"></div></div><div class="sub" id="tonext" style="margin:6px 0 0"></div><div class="sub" id="xp" style="margin:2px 0 0"></div></div>
+  <div class="card"><h2>Sessions</h2><div class="big" id="nsessions">0</div><div class="sub" id="hours" style="margin:6px 0 0">0 hrs total</div></div>
+
+  <div class="card wide next"><h2>▶ Next up</h2><p id="nextup"></p></div>
+
+  <div class="card wide"><h2>Roadmap</h2><div id="phases"></div></div>
+
+  <div class="card wide"><h2>Last 14 days</h2><div class="heat" id="heat"></div></div>
+
+  <div class="card wide"><h2>Badges</h2><div class="badges" id="badges"></div></div>
+
+  <div class="card wide"><h2>Session log</h2><ul class="log" id="log"></ul></div>
+</div>
+
+<script>
+/* ============================================================
+   PROGRESS DATA — Claude (tutor) updates this block each session.
+   Sabi: one day you'll refactor this whole file yourself. 😉
+   ============================================================ */
+const DATA = {
+  sessions: [
+    {date:"2026-07-01", minutes:30, xp:10, note:"hello.py — feedback loop; discovered parse phase vs run phase"},
+    {date:"2026-07-02", minutes:15, xp:5, note:"ZeroDivisionError experiment — syntax vs runtime errors nailed"},
+  ],
+  phases: [
+    {id:"F.1", name:"Python from zero", star:false, pct:8,  status:"current"},
+    {id:"F.2", name:"How machines learn from text", star:false, pct:0, status:"locked"},
+    {id:"P0",  name:"Real engineer habits (git, tests, packages)", star:false, pct:0, status:"locked"},
+    {id:"P1",  name:"LLM APIs & prompt engineering", star:false, pct:0, status:"locked"},
+    {id:"P2",  name:"RAG — chat with your docs (LIVE)", star:true, pct:0, status:"locked"},
+    {id:"P3",  name:"Evaluation & observability (your edge)", star:true, pct:0, status:"locked"},
+    {id:"P4",  name:"Agents, tools & MCP", star:true, pct:0, status:"locked"},
+    {id:"P5",  name:"Production & deployment", star:false, pct:0, status:"locked"},
+    {id:"P6",  name:"Fine-tuning & SLMs", star:false, pct:0, status:"locked"},
+    {id:"P7",  name:"Capstone + job hunt", star:false, pct:0, status:"locked"},
+  ],
+  badges: [
+    {icon:"🐣", name:"First run", desc:"Ran your first program", earned:true},
+    {icon:"🐛", name:"Bug whisperer", desc:"Broke code on purpose & read the error", earned:true},
+    {icon:"🔥", name:"7-day streak", earned:false},
+    {icon:"⚔️", name:"Boss fight W1", desc:"Mad-libs generator", earned:false},
+    {icon:"📦", name:"First repo", desc:"Word counter on GitHub", earned:false},
+    {icon:"🧠", name:"It learns!", desc:"Rebuilt sentiment classifier & explained it", earned:false},
+    {icon:"🌐", name:"SHIPPED", desc:"First live URL on the internet", earned:false},
+    {icon:"📊", name:"Eval master", desc:"Documented measurable improvement", earned:false},
+    {icon:"🤖", name:"Agent builder", earned:false},
+    {icon:"💼", name:"Hired-ready", desc:"Capstone live + CV done", earned:false},
+  ],
+  nextUp: "Session 2 — Qi Condensation begins: variables. You forge your cultivator's CHARACTER SHEET (name, realm, qi, technique) — the first file of your own cultivation RPG. Longer session planned: variables + first training-cycle preview. (+15 qi)"
+};
+
+/* ---------- rendering (no need to touch below) ---------- */
+const $ = id => document.getElementById(id);
+const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+// Qi + realm
+const REALMS = ["Mortal","Qi Condensation","Foundation Establishment","Core Formation","Nascent Soul","Soul Transformation","Void Refinement","Body Integration","Grand Ascension","True Immortal (Hired)"];
+const xp = DATA.sessions.reduce((s,x)=>s+x.xp,0);
+const lvl = Math.floor(xp/100)+1;
+$("xp").textContent = xp + " qi gathered total";
+$("realm").textContent = REALMS[Math.min(lvl-1, REALMS.length-1)];
+$("xpfill").style.width = (xp%100)+"%";
+$("tonext").textContent = (100-(xp%100)) + " qi to breakthrough: " + (REALMS[Math.min(lvl, REALMS.length-1)]);
+
+// sessions
+$("nsessions").textContent = DATA.sessions.length;
+$("hours").textContent = (DATA.sessions.reduce((s,x)=>s+x.minutes,0)/60).toFixed(1)+" hrs total";
+
+// streak
+const dates = new Set(DATA.sessions.map(s=>s.date));
+function iso(d){return d.toISOString().slice(0,10)}
+let streak=0, d=new Date();
+if(!dates.has(iso(d))) d.setDate(d.getDate()-1); // today not done yet ≠ broken
+while(dates.has(iso(d))){streak++; d.setDate(d.getDate()-1);}
+let longest=0, run=0, all=[...dates].sort();
+for(let i=0;i<all.length;i++){
+  run = (i>0 && (new Date(all[i])-new Date(all[i-1]))===86400000) ? run+1 : 1;
+  longest=Math.max(longest,run);
+}
+$("streak").textContent=streak;
+$("longest").textContent="longest: "+longest;
+$("flameIcon").style.filter = streak===0 ? "grayscale(1)" : "none";
+
+// phases
+$("phases").innerHTML = DATA.phases.map(p=>{
+  const color = p.status==="done"?"var(--green)":p.status==="current"?"var(--accent)":"var(--border)";
+  return `<div class="phase">
+    <span class="pid">${p.id}</span>
+    <span class="pname">${p.name} ${p.star?'<span class="star">⭐</span>':''}</span>
+    <span class="pbar"><span class="pfill" style="width:${p.pct}%;background:${color};display:block"></span></span>
+    <span class="tag t-${p.status}">${p.status==="current"?"● now":p.status}</span>
+  </div>`;
+}).join("");
+
+// heatmap — last 14 days
+let cells="";
+for(let i=13;i>=0;i--){
+  const dt=new Date(); dt.setDate(dt.getDate()-i);
+  const key=iso(dt);
+  const mins=DATA.sessions.filter(s=>s.date===key).reduce((s,x)=>s+x.minutes,0);
+  const lvl2=mins===0?0:mins<30?1:mins<75?2:3;
+  cells+=`<div class="cell" data-lvl="${lvl2}" data-tip="${days[dt.getDay()]} ${key.slice(5)} — ${mins} min"></div>`;
+}
+$("heat").innerHTML=cells;
+
+// badges
+$("badges").innerHTML = DATA.badges.map(b=>
+  `<div class="badge ${b.earned?'':'locked'}" title="${b.desc||''}">${b.icon} ${b.name}</div>`).join("");
+
+// next up
+$("nextup").textContent = DATA.nextUp;
+
+// log (newest first)
+$("log").innerHTML = DATA.sessions.slice().reverse().map(s=>
+  `<li><span class="d">${s.date}</span>+${s.xp} XP · ${s.minutes} min — ${s.note}</li>`).join("")
+  || "<li>No sessions yet. Today is day one.</li>";
+</script>
+</body>
+</html>
