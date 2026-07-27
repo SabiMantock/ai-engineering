@@ -31,10 +31,9 @@ print("Qi: {qi}")
 scroll = "ashen palm strike"
 print(scroll.title())
 print(scroll.upper().replace(" ", "-"))
-print(scroll[0])
+print(scroll[99])
 print(len(scroll))
 
 print(scroll[0:5])    # characters 0,1,2,3,4 — stops BEFORE 5
 print(scroll[:5])     # same thing
 print(scroll[-5:])    # from 11 to the end
-
