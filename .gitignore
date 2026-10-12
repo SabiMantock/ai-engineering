@@ -17,3 +17,6 @@ venv/
 .continue/
 .vscode/
 .idea/
+
+# Vector stores
+langchain/doc_loading/intro-to-ds-lectures/
