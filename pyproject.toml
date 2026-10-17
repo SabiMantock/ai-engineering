@@ -1,0 +1,41 @@
+[project]
+name = "ai-engineering"
+version = "0.1.0"
+description = "AI engineering study notebooks (Python, NLP, LLMs, LangChain)"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    # notebooks
+    "ipykernel",
+    "jupyterlab",
+    # data
+    "numpy<2",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    # classic NLP
+    "nltk",
+    "spacy",
+    "gensim",
+    "vaderSentiment",
+    "textblob",
+    "clean-text",
+    "scikit-learn",
+    # LLMs / HuggingFace
+    "torch",
+    "transformers",
+    "datasets",
+    "evaluate",
+    # LLM APIs + LangChain
+    "python-dotenv",
+    "openai",
+    "anthropic",
+    "langchain",
+    "langchain-core",
+    "langchain-classic",
+    "langchain-community",
+    "langchain-openai",
+    "langchain-anthropic",
+    "langchain-voyageai",
+    "langchain-text-splitters",
+    "langgraph",
+]
